@@ -6,3 +6,4 @@ app = FastAPI()
 @app.get("/hello")
 def say_hello():
     return "Hello00000 there!!"
+
