@@ -25,6 +25,14 @@ products = [
     Product(id=10, name="USB Cable", price=500, quantity=50)
 ]
 
+def init_db():
+    db = session()
+
+    for product in products:
+        db.add(db_models.Product(**product.model_dump()))
+        
+    db.commit()
+
 
 @app.get("/products")
 def get_all_products():
