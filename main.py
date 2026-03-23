@@ -8,10 +8,6 @@ db_models.Base.metadata.create_all(bind = engin)
 
 app = FastAPI()
 
-@app.get("/hello")
-def say_hello():
-    return "Hello00000 there!!"
-
 def get_db():
     db = session()
     try:
