@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 
 export default function useProducts() {
   const [products, setProducts] = useState([
@@ -6,9 +6,25 @@ export default function useProducts() {
     { id: 2, name: "Phone", price: 20000, quantity: 5 },
   ]);
 
-  const addProduct = (product) => {
-    setProducts((prev) => [...prev, product]);
-  };
+  useEffect(() => {
+  const saved = localStorage.getItem("products");
+  if (saved) setProducts(JSON.parse(saved));
+}, []);
+
+useEffect(() => {
+  localStorage.setItem("products", JSON.stringify(products));
+}, [products]);
+
+ const addProduct = (product) => {
+  setProducts((prev) => {
+    const exists = prev.find((p) => p.id === product.id);
+    if (exists) {
+      alert("Product with this ID already exists!");
+      return prev;
+    }
+    return [...prev, product];
+  });
+};
 
   const deleteProduct = (id) => {
     setProducts((prev) => prev.filter((p) => p.id !== id));

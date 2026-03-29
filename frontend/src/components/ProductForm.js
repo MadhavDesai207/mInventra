@@ -13,7 +13,15 @@ export default function ProductForm({ onAdd }) {
   };
 
   const handleSubmit = () => {
-    if (!form.id || !form.name) return;
+    if (!form.id || !form.name || !form.price || !form.quantity) {
+      alert("All fields are required");
+      return;
+    }
+
+    if (form.price <= 0 || form.quantity <= 0) {
+      alert("Price and Quantity must be positive");
+      return;
+    }
 
     onAdd({
       ...form,

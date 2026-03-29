@@ -9,16 +9,21 @@ export default function ProductTable({ products, onDelete }) {
           <th className="border p-2">Name</th>
           <th className="border p-2">Price</th>
           <th className="border p-2">Quantity</th>
-          <th className="border p-2">Action</th>
+          <th className="border p-2">Total Value</th>
         </tr>
       </thead>
       <tbody>
-        {products.map((p) => (
+        {products.length === 0 ? (
+          <tr>
+            <td colSpan="6">No products available</td>
+          </tr>
+        ) : (products.map((p) => (
           <tr key={p.id} className="text-center">
             <td className="border p-2">{p.id}</td>
             <td className="border p-2">{p.name}</td>
             <td className="border p-2">₹{p.price}</td>
             <td className="border p-2">{p.quantity}</td>
+            <td>₹{p.price * p.quantity}</td>
             <td className="border p-2">
               <button
                 onClick={() => onDelete(p.id)}
@@ -28,7 +33,7 @@ export default function ProductTable({ products, onDelete }) {
               </button>
             </td>
           </tr>
-        ))}
+        )))}
       </tbody>
     </table>
   );
