@@ -4,126 +4,134 @@ import { InputNumber } from "primereact/inputnumber";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import { Card } from "primereact/card";
+import { FloatLabel } from "primereact/floatlabel";
+import { classNames } from "primereact/utils";
 
 export default function ProductForm({ onAdd }) {
   const toast = useRef(null);
-
   const [form, setForm] = useState({
     id: null,
     name: "",
     price: null,
     quantity: null,
   });
-
   const [errors, setErrors] = useState({});
 
-  // ✅ Validation
   const validate = () => {
     const newErrors = {};
-
     if (!form.id) newErrors.id = "ID required";
-    if (!form.name) newErrors.name = "Name required";
-    if (!form.price || form.price <= 0) newErrors.price = "Invalid price";
-    if (!form.quantity || form.quantity <= 0)
-      newErrors.quantity = "Invalid quantity";
-
+    if (!form.name.trim()) newErrors.name = "Name required";
+    if (form.price === null || form.price <= 0) newErrors.price = "Invalid price";
+    if (form.quantity === null || form.quantity <= 0) newErrors.quantity = "Invalid quantity";
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // ✅ Submit
   const handleSubmit = () => {
     if (!validate()) {
       toast.current.show({
-        severity: "error",
-        summary: "Validation Error",
-        detail: "Please fix the form",
+        severity: "warn",
+        summary: "Validation",
+        detail: "Please complete all fields correctly.",
+        life: 3000,
       });
       return;
     }
-
     onAdd(form);
-
     toast.current.show({
       severity: "success",
       summary: "Success",
-      detail: "Product added",
+      detail: "Product added to inventory",
+      life: 3000,
     });
-
     setForm({ id: null, name: "", price: null, quantity: null });
     setErrors({});
   };
 
   return (
-    <Card title="Add Product" className="mb-4 shadow-2">
+    <Card title="Product Details" className="shadow-4 border-round-xl mb-4">
       <Toast ref={toast} />
-
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
-
-        {/* ID */}
-        <div>
-          <InputNumber
-            value={form.id}
-            onValueChange={(e) =>
-              setForm({ ...form, id: e.value })
-            }
-            placeholder="ID"
-            className="w-full"
-          />
-          {errors.id && <small className="text-red-500">{errors.id}</small>}
+      <div className="grid p-fluid">
+        {/* ID Field */}
+        <div className="col-12 md:col-2 mt-4">
+          <FloatLabel>
+            <InputNumber
+              id="prod-id"
+              value={form.id}
+              useGrouping={false}
+              onValueChange={(e) => setForm({ ...form, id: e.value })}
+              className={classNames({ "p-invalid": errors.id })}
+            />
+            <label htmlFor="prod-id">Product ID</label>
+          </FloatLabel>
+          {errors.id && <small className="p-error ml-1">{errors.id}</small>}
         </div>
 
-        {/* Name */}
-        <div>
-          <InputText
-            value={form.name}
-            onChange={(e) =>
-              setForm({ ...form, name: e.target.value })
-            }
-            placeholder="Product Name"
-            className="w-full"
-          />
-          {errors.name && <small className="text-red-500">{errors.name}</small>}
+        {/* Name Field */}
+        <div className="col-12 md:col-4 mt-4">
+          <div className="p-inputgroup">
+            <span className="p-inputgroup-addon">
+              <i className="pi pi-tag"></i>
+            </span>
+            <FloatLabel>
+              <InputText
+                id="prod-name"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                className={classNames({ "p-invalid": errors.name })}
+              />
+              <label htmlFor="prod-name">Product Name</label>
+            </FloatLabel>
+          </div>
+          {errors.name && <small className="p-error ml-1">{errors.name}</small>}
         </div>
 
-        {/* Price */}
-        <div>
-          <InputNumber
-            value={form.price}
-            onValueChange={(e) =>
-              setForm({ ...form, price: e.value })
-            }
-            mode="currency"
-            currency="INR"
-            locale="en-IN"
-            placeholder="Price"
-            className="w-full"
-          />
-          {errors.price && <small className="text-red-500">{errors.price}</small>}
+        {/* Price Field */}
+        <div className="col-12 md:col-3 mt-4">
+          <FloatLabel>
+            <InputNumber
+              id="prod-price"
+              value={form.price}
+              onValueChange={(e) => setForm({ ...form, price: e.value })}
+              mode="currency"
+              currency="INR"
+              locale="en-IN"
+              className={classNames({ "p-invalid": errors.price })}
+            />
+            <label htmlFor="prod-price">Price</label>
+          </FloatLabel>
+          {errors.price && <small className="p-error ml-1">{errors.price}</small>}
         </div>
 
-        {/* Quantity */}
-        <div>
-          <InputNumber
-            value={form.quantity}
-            onValueChange={(e) =>
-              setForm({ ...form, quantity: e.value })
-            }
-            placeholder="Quantity"
-            className="w-full"
-          />
-          {errors.quantity && (
-            <small className="text-red-500">{errors.quantity}</small>
-          )}
+        {/* Quantity Field */}
+        <div className="col-12 md:col-3 mt-4">
+          <FloatLabel>
+            <InputNumber
+              id="prod-qty"
+              value={form.quantity}
+              onValueChange={(e) => setForm({ ...form, quantity: e.value })}
+              showButtons
+              buttonLayout="horizontal"
+              step={1}
+              decrementButtonClassName="p-button-secondary"
+              incrementButtonClassName="p-button-secondary"
+              incrementButtonIcon="pi pi-plus"
+              decrementButtonIcon="pi pi-minus"
+              className={classNames({ "p-invalid": errors.quantity })}
+            />
+            <label htmlFor="prod-qty" className="ml-5">Quantity</label>
+          </FloatLabel>
+          {errors.quantity && <small className="p-error ml-1">{errors.quantity}</small>}
         </div>
 
-        {/* Button */}
-        <div className="flex items-center">
+        {/* Action Button */}
+        <div className="col-12 flex justify-content-end mt-2">
           <Button
-            label="Add"
-            icon="pi pi-plus"
+            label="Add Product"
+            icon="pi pi-check"
             onClick={handleSubmit}
-            className="w-full"
+            className="p-button-raised p-button-success w-full md:w-auto px-6"
           />
         </div>
       </div>
